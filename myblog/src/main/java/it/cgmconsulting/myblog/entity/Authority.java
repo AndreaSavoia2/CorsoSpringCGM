@@ -7,6 +7,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Entity
 @Getter
 @Setter
@@ -24,6 +27,9 @@ public class Authority {
     private AuthorityName authorityName;
 
     private boolean autorityDefault = false;
+
+    /*@ManyToMany(mappedBy = "authorities")
+    private Set<User> users = new HashSet<>();*/
 
     public Authority(AuthorityName authorityName) {
         this.authorityName = authorityName;

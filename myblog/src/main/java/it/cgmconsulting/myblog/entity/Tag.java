@@ -3,6 +3,9 @@ package it.cgmconsulting.myblog.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Entity
 @Getter @Setter
 @NoArgsConstructor
@@ -18,6 +21,9 @@ public class Tag {
     private String tagName;
 
     private  boolean visible = true; // in db 0 = false , 1 = true
+
+    @ManyToMany(mappedBy = "tags")
+    private Set<Post> posts = new HashSet<>();
 
     public Tag(String tagName) {
         this.tagName = tagName;
