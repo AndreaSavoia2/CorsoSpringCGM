@@ -1,5 +1,6 @@
 package it.cgmconsulting.myblog.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -22,6 +23,7 @@ public class Tag {
 
     private  boolean visible = true; // in db 0 = false , 1 = true
 
+    @JsonIgnore
     @ManyToMany(mappedBy = "tags")
     private Set<Post> posts = new HashSet<>();
 

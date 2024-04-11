@@ -1,5 +1,6 @@
 package it.cgmconsulting.myblog.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import it.cgmconsulting.myblog.entity.common.CreationUpdate;
 import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;
@@ -29,6 +30,7 @@ public class User extends CreationUpdate {
     @Column(nullable = false, unique = true)
     private String email;
 
+    @JsonIgnore // non restituisci l'attributo nella repos
     @Column(nullable = false)
     private String password;
 

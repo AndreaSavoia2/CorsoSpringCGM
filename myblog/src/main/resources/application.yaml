@@ -1,5 +1,9 @@
+# server.servlet.context-path
 server:
   port: 8090
+  servlet:
+    #http://hostname:port//context-path/requestmapping/uri
+    context-path: /api
 
 
 spring:
@@ -33,11 +37,13 @@ spring:
     show-sql: true
     open-in-view: false
 
+  main:
+    banner-mode: off
 
 spring-doc:
   swagger-ui:
     enabled: true
-    # hostname:port/swagger-ui.html => localhost:8080/swagger-ui.html
+    # hostname:port/swagger-ui.html => localhost:8080/api/swagger-ui.html
     path: /swagger-ui.html
 
 logging:
