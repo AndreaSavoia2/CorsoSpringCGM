@@ -26,7 +26,7 @@ public class Authority {
     @Column(length = 10, nullable = false, unique = true)
     private AuthorityName authorityName;
 
-    private boolean autorityDefault = false;
+    private boolean authorityDefault = false;
 
     /*@ManyToMany(mappedBy = "authorities")
     private Set<User> users = new HashSet<>();*/
