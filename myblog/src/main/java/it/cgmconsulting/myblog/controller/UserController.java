@@ -1,7 +1,11 @@
 package it.cgmconsulting.myblog.controller;
 
+import it.cgmconsulting.myblog.payload.request.ChangeMeRequest;
+import it.cgmconsulting.myblog.payload.request.ChangePasswordRequest;
 import it.cgmconsulting.myblog.payload.request.SigninRequest;
 import it.cgmconsulting.myblog.payload.request.SignupRequest;
+import it.cgmconsulting.myblog.payload.response.AuthenticationResponse;
+import it.cgmconsulting.myblog.payload.response.GetMeResponse;
 import it.cgmconsulting.myblog.service.AuthenticationService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
@@ -12,12 +16,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @RestController
@@ -47,9 +50,50 @@ public class UserController {
 
     @PatchMapping("/v1/user/{id}")
     @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<?> changeRole(@PathVariable @Min(1) int id, @NotBlank String[] auths){
-        Set<String> authSet = new HashSet<>(Arrays.asList(auths));
-        return new ResponseEntity<>(authenticationService.changeRole(id, authSet), HttpStatus.OK);
+    public ResponseEntity<?> changeRole(
+            @PathVariable @Min(1) int id,
+            @RequestParam @NotEmpty Set<String> auths,
+            @AuthenticationPrincipal UserDetails userDetails){
+        AuthenticationResponse a = authenticationService.changeRole(id,auths,userDetails);
+
+        if(a != null){
+            return new ResponseEntity<>(a, HttpStatus.OK);
+        }else {
+            return new ResponseEntity<>("you cannot change your own role", HttpStatus.UNAUTHORIZED);
+        }
+
     }
 
+    @PatchMapping("/v1/user")
+    public ResponseEntity<?> changePassword(
+            @RequestBody @Valid ChangePasswordRequest request,
+            @AuthenticationPrincipal UserDetails userDetails){
+        return new ResponseEntity<>(authenticationService.changePassword(request, userDetails), HttpStatus.OK);
+    }
+
+    @PatchMapping("/v0/user/reset")
+    public ResponseEntity<?> resetPassword(@RequestParam @NotBlank String username){
+        return new ResponseEntity<>(authenticationService.resetPassword(username), HttpStatus.OK);
+
+    }
+
+    @GetMapping("/v1/user")
+    public ResponseEntity<?> getMe(@AuthenticationPrincipal UserDetails userDetails){
+        return new ResponseEntity<>(authenticationService.getMe(userDetails), HttpStatus.OK);
+    }
+
+    @PutMapping("/v1/user")
+    public ResponseEntity<?> changeMe(@RequestBody @Valid ChangeMeRequest request, @AuthenticationPrincipal UserDetails userDetails){
+        GetMeResponse me = authenticationService.changeMe(request,userDetails);
+        if(me == null){
+            return new ResponseEntity<>("Email alredy in use", HttpStatus.BAD_REQUEST);
+        }else{
+            return new ResponseEntity<>(me,HttpStatus.OK);
+        }
+    }
+
+    @PutMapping("/v1/user/remove")
+    public ResponseEntity<?> deleteMe(@AuthenticationPrincipal UserDetails userDetails){
+        return new ResponseEntity<>(authenticationService.deleteMe(userDetails), HttpStatus.OK);
+    }
 }

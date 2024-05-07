@@ -1,26 +1,31 @@
 package it.cgmconsulting.myblog.service;
 
 
-import it.cgmconsulting.myblog.entity.Authority;
-import it.cgmconsulting.myblog.entity.Registration;
-import it.cgmconsulting.myblog.entity.User;
+import it.cgmconsulting.myblog.entity.*;
 import it.cgmconsulting.myblog.entity.enumeration.AuthorityName;
 import it.cgmconsulting.myblog.exception.ResourceNotFoundException;
 import it.cgmconsulting.myblog.mail.Mail;
 import it.cgmconsulting.myblog.mail.MailService;
+import it.cgmconsulting.myblog.payload.request.ChangeMeRequest;
+import it.cgmconsulting.myblog.payload.request.ChangePasswordRequest;
 import it.cgmconsulting.myblog.payload.request.SigninRequest;
 import it.cgmconsulting.myblog.payload.request.SignupRequest;
 import it.cgmconsulting.myblog.payload.response.AuthenticationResponse;
+import it.cgmconsulting.myblog.payload.response.AvatarResponse;
+import it.cgmconsulting.myblog.payload.response.GetMeResponse;
 import it.cgmconsulting.myblog.repository.AuthorityRepository;
+import it.cgmconsulting.myblog.repository.AvatarRepository;
 import it.cgmconsulting.myblog.repository.UserRepository;
 import it.cgmconsulting.myblog.security.JwtService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -41,6 +46,7 @@ public class AuthenticationService {
     private final JwtService jwtService;
     private final MailService mailService;
     private final RegistrationService registrationService;
+    private final AvatarRepository avatarRepository;
 
     @Transactional
     public String signup(SignupRequest request) {
@@ -160,16 +166,19 @@ public class AuthenticationService {
     }
 
     @Transactional
-    public AuthenticationResponse changeRole(int id, Set<String> setString) {
+    public AuthenticationResponse changeRole(int id, Set<String> auths, UserDetails userDetails) {
         User user = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User", "id", id));
 
-        Set<AuthorityName> authorityNames = new HashSet<>();
-        for(String s : setString){
-            authorityNames.add(AuthorityName.valueOf(s));
+        if(userDetails.getUsername().equals(user.getUsername())){
+            return null;
         }
 
-        Set<Authority> auths = authorityRepository.findByAuthorityNameIn(authorityNames);
-        user.setAuthorities(auths);
+        Set<AuthorityName> authorityNames = EnumSet.noneOf(AuthorityName.class);
+        for(String s : auths){
+            authorityNames.add(AuthorityName.valueOf(s));
+        }
+        Set<Authority> authorities = authorityRepository.findByAuthorityNameIn(authorityNames);
+        user.setAuthorities(authorities);
 
         AuthenticationResponse authenticationResponse = AuthenticationResponse.builder()
                 .id(user.getId())
@@ -179,5 +188,103 @@ public class AuthenticationService {
                 .build();
 
         return authenticationResponse;
+
+    }
+
+    public String changePassword(ChangePasswordRequest request, UserDetails userDetails){
+
+        User user = (User) userDetails;
+
+        if (!request.newPwd().equals(request.newPwdConfirm())){
+            return "New Password and new Password Confirm are different";
+        }
+
+        if (!passwordEncoder.matches(request.oldPwd(), user.getPassword())){
+            return "Wrong old Password";
+        }
+
+        user.setPassword(passwordEncoder.encode(request.newPwd()));
+        userRepository.save(user);
+        return "New password had been set. Please re-login";
+
+    }
+
+    @Transactional
+    public String resetPassword(String username){
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(()-> new ResourceNotFoundException("User", "username", username));
+        String pwd = RandomStringUtils.randomAlphanumeric(10);
+
+        Mail mail = mailService.createMail(user,
+                "MyBlog - Reset password",
+                "Hi " + user.getUsername() + ",\n use this password " + pwd + " to login");
+        mailService.sendMail(mail);
+
+        user.setPassword(passwordEncoder.encode(pwd));
+        return "You password reset. check email";
+    }
+
+    public GetMeResponse getMe(UserDetails userDetails){
+
+        User user = (User) userDetails;
+        Avatar avatar = avatarRepository.findById( new AvatarId(user)).orElse(null);
+        AvatarResponse avatarResponse = null;
+
+        if (avatar != null){
+            avatarResponse = new AvatarResponse(
+                    avatar.getAvatarId().getUserId().getId(),
+                    avatar.getFilename(),
+                    avatar.getFiletype(),
+                    avatar.getData());
+        }
+
+        GetMeResponse me = GetMeResponse.builder()
+                .id(user.getId())
+                .lastname(user.getLatname())
+                .firstname(user.getFirstname())
+                .username(user.getUsername())
+                .email(user.getEmail())
+                .bio(user.getBio())
+                .avatar(avatarResponse)
+                .build();
+
+        return me;
+    }
+
+    public GetMeResponse changeMe(ChangeMeRequest request, UserDetails userDetails){
+
+        User user = (User) userDetails;
+
+        if(userRepository.existsByEmailAndIdNot(request.email(), user.getId())){
+            return null;
+        }
+
+        GetMeResponse me = GetMeResponse.builder()
+                .lastname(request.lastname())
+                .firstname(request.firstname())
+                .email(request.email())
+                .bio(request.bio())
+                .build();
+
+        user.setLatname(me.getLastname());
+        user.setFirstname(me.getFirstname());
+        user.setEmail(me.getEmail());
+        user.setBio(me.getBio());
+        userRepository.save(user);
+
+        return me;
+    }
+
+    public String deleteMe(UserDetails userDetails){
+        User user = (User) userDetails;
+        user.setEnabled(false);
+        String s = UUID.randomUUID().toString();
+        user.setEmail(s);
+        user.setFirstname(s);
+        user.setLatname(s);
+        user.setBio(s);
+        user.setUsername(s.substring(0,19));
+        userRepository.save(user);
+        return "Your account has been removed";
     }
 }

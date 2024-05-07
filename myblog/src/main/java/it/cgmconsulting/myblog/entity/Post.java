@@ -26,6 +26,8 @@ public class Post extends CreationUpdate {
     @Column(nullable = false)
     private String title;
 
+    private String overview;
+
     @Column(nullable = false, length = 65535 /*columnDefinition = "TEXT"*/)
     private String content;
 

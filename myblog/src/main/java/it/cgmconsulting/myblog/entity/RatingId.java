@@ -21,5 +21,5 @@ public class RatingId implements Serializable {
 
     @ManyToOne
     @JoinColumn(name="post_id", nullable = false)
-    private Post PostId;
+    private Post postId;
 }

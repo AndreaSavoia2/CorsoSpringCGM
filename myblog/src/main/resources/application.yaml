@@ -81,3 +81,15 @@ application:
   confirmCode:
     # validita espressa in minuti _> 1440 min = 1 giorno
     validity: 1440
+  image:
+    avatar:
+      # 5kb = 1024 * 5 // perso immagine
+      size: 5120
+      # in pixel
+      height: 100
+      width: 100
+      # tipi di file
+      extensions: gpg,jpeg,png
+  comment:
+    # Lo user ha tempo 60 secondi per modificare il commento
+    time: 60

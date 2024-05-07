@@ -12,23 +12,22 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j  // fornisce un log
 public class TagService {
 
-    private final TagRepository TAG_REPOSITORY; // iniezione avventura con @RequiredArgsConstructor
+    private final TagRepository tagRepository; // iniezione avventura con @RequiredArgsConstructor
 
     // lista di tag completa (visibili e no)
     public List<Tag> getAllTags(char visible){
         List<Tag> tags = new ArrayList<>();
         if(visible == 'A'){
-            tags = TAG_REPOSITORY.findAllByOrderByTagName();
-        } else if (visible == 'Y') {
-            tags = TAG_REPOSITORY.findByVisibleTrueOrderByTagName();
+            tags = tagRepository.findAllByOrderByTagName();
         } else if (visible == 'N') {
-            tags = TAG_REPOSITORY.findByVisibleFalseOrderByTagName();
+            tags = tagRepository.findByVisibleFalseOrderByTagName();
         }
         log.info("Tag list contains " + tags.size()+ " elements");
         return tags;
@@ -36,27 +35,27 @@ public class TagService {
 
     //cercare uno specifico tag
     public Tag getTag(short id){
-        return TAG_REPOSITORY.findById(id).
+        return tagRepository.findById(id).
                 orElseThrow(() -> new ResourceNotFoundException("Tag", "Id", id));
     }
 
     //inserire un nuovo tag
     public Tag createTag(String tagName){
         //controllo che il valore già non esisti
-        if (TAG_REPOSITORY.existsByTagName(tagName)){
+        if (tagRepository.existsByTagName(tagName)){
             return null;
         }
-        return TAG_REPOSITORY.save(new Tag(tagName));
+        return tagRepository.save(new Tag(tagName));
     }
 
     //modificare un tag esistente
     @Transactional
     public Tag updateTag(String tagName, String newTagName, boolean visible){
         // trovo tag da modifcare
-        Tag tag = TAG_REPOSITORY.findByTagName(tagName).
+        Tag tag = tagRepository.findByTagName(tagName).
                 orElseThrow(() -> new ResourceNotFoundException("Tag", "tagName", tagName));
         // verifico che non esista un altro recond che abbia lo stesso tang name di quello nuovo
-        if(TAG_REPOSITORY.existsByTagNameAndIdNot(newTagName, tag.getId())){
+        if(tagRepository.existsByTagNameAndIdNot(newTagName, tag.getId())){
             return null;
         }
         tag.setTagName(newTagName);
@@ -65,6 +64,18 @@ public class TagService {
         // in caso contrario tutte le operazioni vengono annullate
         // funziona solo su elementi già esistenti
         return tag;
+    }
+
+    public List<Tag> getAllVisibleTags(){
+        return  tagRepository.findByVisibleTrueOrderByTagName();
+    }
+
+    public Set<String> getTagNameByPost(int postId){
+        return tagRepository.getTagNamesByPost(postId);
+    }
+
+    public Set<Tag> findAllByVisibleTrueAndTagNameIn(Set<String> tagName){
+        return tagRepository.findAllByVisibleTrueAndTagNameIn(tagName);
     }
 
 }
