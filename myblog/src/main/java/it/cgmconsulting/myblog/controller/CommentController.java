@@ -45,7 +45,7 @@ public class CommentController {
 
     @GetMapping("/v0/comments")
     public ResponseEntity<?> getComments(){
-        return new ResponseEntity<>(commentService.getComments1(), HttpStatus.OK);
+        return new ResponseEntity<>(commentService.getComments(), HttpStatus.OK);
     }
 
     // Get List<Comment> /v0/comments

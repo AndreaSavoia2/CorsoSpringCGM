@@ -15,9 +15,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -47,7 +45,7 @@ public class CommentService {
         post.setTotComments((short) (post.getTotComments() + 1));
 
         return  new CommentResponse(comment.getId(),
-                comment.getContent(),
+                comment.getComment(),
                 comment.getUserId().getUsername(),
                 comment.getCreatedAt(),
                 comment.getParent() != null ? comment.getParent().getId() : null);
@@ -73,7 +71,7 @@ public class CommentService {
             return  "you can update the comment only " + timeToUpdate + " sec after creation";
         }
         // set del nuovo commento
-        comment.setContent(request.getComment());
+        comment.setComment(request.getComment());
         return "your comment has been update";
     }
 
@@ -95,7 +93,7 @@ public class CommentService {
         return "your comment has been deleted";
     }
 
-    public List<CommentResponse> getComments() {
+    /*public List<CommentResponse> getComments() {
         List<Comment> comments = commentRepository.getComments(LocalDateTime.now().minusSeconds(timeToUpdate));
 
         return comments.stream()
@@ -106,12 +104,10 @@ public class CommentService {
                         c.getCreatedAt(),
                         c.getParent() != null ? c.getParent().getId() : null))
                 .collect(Collectors.toList());
-    }
+    }*/
 
-    public List<CommentResponse> getComments1() {
-        List<CommentResponse> commentResponseList = commentRepository.getComments1(LocalDateTime.now().minusSeconds(timeToUpdate));
-        System.out.println(commentResponseList.toString());
-        return commentResponseList;
+    public List<CommentResponse> getComments() {
+        return commentRepository.getComments(LocalDateTime.now().minusSeconds(timeToUpdate));
     }
 
 }

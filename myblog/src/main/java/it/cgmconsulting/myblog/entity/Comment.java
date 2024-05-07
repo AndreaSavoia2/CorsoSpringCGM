@@ -20,7 +20,7 @@ public class Comment extends CreationUpdate {
     private int id;
 
     @Column(nullable = false)
-    private String content;
+    private String comment;
 
     @ManyToOne
     @JoinColumn(name="user_id", nullable = false)
@@ -36,8 +36,8 @@ public class Comment extends CreationUpdate {
 
     private boolean censored = false;
 
-    public Comment(String content, User userId, Post postId, Comment parent) {
-        this.content = content;
+    public Comment(String comment, User userId, Post postId, Comment parent) {
+        this.comment = comment;
         this.userId = userId;
         this.postId = postId;
         this.parent = parent;
