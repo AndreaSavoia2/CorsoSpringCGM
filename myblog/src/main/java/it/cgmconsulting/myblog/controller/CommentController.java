@@ -43,14 +43,9 @@ public class CommentController {
         return new ResponseEntity<>(commentService.deleteComment(id, userDetails), HttpStatus.OK);
     }
 
-    @GetMapping("/v0/comments")
-    public ResponseEntity<?> getComments(){
-        return new ResponseEntity<>(commentService.getComments(), HttpStatus.OK);
+    @GetMapping("/v0/comments/{postId}")
+    public ResponseEntity<?> getComments(@PathVariable @Min(1) int postId){
+        return new ResponseEntity<>(commentService.getComments(postId), HttpStatus.OK);
     }
-
-    // Get List<Comment> /v0/comments
-    // verificare se censurati
-    // creati almeno 1 minuto prima della get
-    // ordinati per updateAt DESC
 
 }

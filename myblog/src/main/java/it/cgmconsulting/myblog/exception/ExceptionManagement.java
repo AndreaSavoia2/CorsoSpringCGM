@@ -26,6 +26,11 @@ public class ExceptionManagement {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(CommentReportingException.class)
+    public ResponseEntity<String> ResourceNotFoundExceptionManagement(CommentReportingException ex){
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+    }
+
     @ExceptionHandler(MissingServletRequestParameterException.class)
     public ResponseEntity<String> missingServletRequestParameterExceptionManagement(MissingServletRequestParameterException ex){
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);

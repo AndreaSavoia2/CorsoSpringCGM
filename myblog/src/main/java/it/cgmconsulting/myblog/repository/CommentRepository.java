@@ -7,18 +7,26 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 public interface CommentRepository extends JpaRepository<Comment,Integer> {
-    /*@Query("select c from Comment c WHERE c.censored IS false AND c.updateAt <= :now order by c.updateAt DESC")
-    List<Comment> getComments(LocalDateTime now);*/
 
     @Query("select new it.cgmconsulting.myblog.payload.response.CommentResponse(" +
             "c.id, " +
-            "c.comment, " +
+            "CASE WHEN c.censored = false THEN c.comment ELSE '********' END , " +
             "c.userId.username, " +
             "c.updateAt, " +
             "c.parent.id " +
-            ") from Comment c " +
-            "WHERE c.censored = false AND c.updateAt <= :now order by c.updateAt DESC ")
-    List<CommentResponse> getComments(LocalDateTime now);
+            ") FROM Comment c " +
+            "WHERE c.postId.id = :postId " +
+            "AND c.updateAt <= :now " +
+            "ORDER BY c.updateAt DESC ")
+    List<CommentResponse> getComments(int postId, LocalDateTime now);
+
+    @Query (value = "SELECT c FROM Comment c " +
+            "LEFT JOIN Reporting r ON c=r.reportingId.commentId " +
+            "WHERE c.id = :commentId " +
+            "AND r.createdAt IS NULL ")
+    Optional<Comment> getCommentToReport(int commentId);
+
 }

@@ -3,6 +3,7 @@ package it.cgmconsulting.myblog.service;
 import it.cgmconsulting.myblog.entity.Comment;
 import it.cgmconsulting.myblog.entity.Post;
 import it.cgmconsulting.myblog.entity.User;
+import it.cgmconsulting.myblog.exception.CommentReportingException;
 import it.cgmconsulting.myblog.exception.ResourceNotFoundException;
 import it.cgmconsulting.myblog.payload.request.CommentRequest;
 import it.cgmconsulting.myblog.payload.request.CommentUpdateRequest;
@@ -75,6 +76,7 @@ public class CommentService {
         return "your comment has been update";
     }
 
+    @Transactional
     public String deleteComment(int id, UserDetails userDetails) {
         Comment comment = findCommentById(id);
         // verifico autore del commento
@@ -89,25 +91,18 @@ public class CommentService {
             return  "you can delete the comment only " + timeToUpdate + " sec after creation";
         }
 
+        comment.getPostId().setTotComments((short ) (comment.getPostId().getTotComments() - 1));
         commentRepository.deleteById(id);
         return "your comment has been deleted";
     }
 
-    /*public List<CommentResponse> getComments() {
-        List<Comment> comments = commentRepository.getComments(LocalDateTime.now().minusSeconds(timeToUpdate));
+    public List<CommentResponse> getComments(int postId) {
+        return commentRepository.getComments(postId,LocalDateTime.now().minusSeconds(timeToUpdate));
+    }
 
-        return comments.stream()
-                .map(c -> new CommentResponse(
-                        c.getId(),
-                        c.getContent(),
-                        c.getUserId().getUsername(),
-                        c.getCreatedAt(),
-                        c.getParent() != null ? c.getParent().getId() : null))
-                .collect(Collectors.toList());
-    }*/
-
-    public List<CommentResponse> getComments() {
-        return commentRepository.getComments(LocalDateTime.now().minusSeconds(timeToUpdate));
+    public Comment getCommentToReport(int id){
+        return commentRepository.getCommentToReport(id).orElseThrow(
+                () -> new CommentReportingException("Comment", "Id", id));
     }
 
 }

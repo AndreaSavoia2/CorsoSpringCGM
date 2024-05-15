@@ -11,6 +11,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -44,6 +45,9 @@ public class User extends CreationUpdate implements UserDetails {
 
     @Column(length = 50)
     private String latname;
+
+    //aggiungere campo di tempo del ban
+    private LocalDate bannedUntil = null;
 
     private String bio;
 
@@ -103,5 +107,9 @@ public class User extends CreationUpdate implements UserDetails {
     @Override
     public boolean isCredentialsNonExpired() {
         return true;
+    }
+
+    public boolean isBanned(){
+        return this.bannedUntil != null;
     }
 }

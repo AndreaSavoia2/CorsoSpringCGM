@@ -6,6 +6,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -17,6 +18,10 @@ import java.util.Set;
 @NoArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = false)
 public class Post extends CreationUpdate {
+
+    @Transient
+    @Value("${application.image.post.path}")
+    private String path;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -49,10 +54,11 @@ public class Post extends CreationUpdate {
     @OrderBy("tagName ASC")
     public Set<Tag> tags = new HashSet<>();
 
-    public Post(String title, String content, User userId) {
+    public Post(String title, String content, User userId, String overview) {
         this.title = title;
         this.content = content;
         this.userId = userId;
+        this.overview = overview;
     }
 
     // questi metodi servono per sincronizzare gli oggetti post e tag quando
@@ -66,4 +72,5 @@ public class Post extends CreationUpdate {
         tags.remove(tag);
         tag.getPosts().remove(this);
     }
+
 }
