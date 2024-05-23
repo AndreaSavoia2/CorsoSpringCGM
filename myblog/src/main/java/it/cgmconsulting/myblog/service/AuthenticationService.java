@@ -3,6 +3,7 @@ package it.cgmconsulting.myblog.service;
 
 import it.cgmconsulting.myblog.entity.*;
 import it.cgmconsulting.myblog.entity.enumeration.AuthorityName;
+import it.cgmconsulting.myblog.entity.enumeration.Frequency;
 import it.cgmconsulting.myblog.exception.ResourceNotFoundException;
 import it.cgmconsulting.myblog.mail.Mail;
 import it.cgmconsulting.myblog.mail.MailService;
@@ -31,6 +32,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Service
@@ -48,9 +50,14 @@ public class AuthenticationService {
     private final MailService mailService;
     private final RegistrationService registrationService;
     private final AvatarRepository avatarRepository;
+    private final ConsentService consentService;
 
     @Transactional
     public String signup(SignupRequest request) {
+        if(!request.isAcceptRules()){
+            return "Without consent is not possibile to proceed";
+        }
+
         if(userRepository.existsByUsernameOrEmail(request.getUsername(), request.getEmail())){
             return null;
         }
@@ -63,6 +70,14 @@ public class AuthenticationService {
         Authority authority = authorityRepository.findByAuthorityDefaultTrue();
         user.setAuthorities(Collections.singleton(authority));
         userRepository.save(user);
+
+        Consent consent = null;
+        if(request.isSendNewsLetter()){
+            consent = new Consent(new ConsentId(user), true, true, Frequency.WEEKLY,null);
+        }else {
+            consent = new Consent(new ConsentId(user), true, false, Frequency.NEVER,null);
+        }
+        consentService.save(consent);
 
         //creazione token di validità
         Registration registration = Registration.builder()
@@ -99,11 +114,11 @@ public class AuthenticationService {
         }
 
         if(!user.isEnabled() && !isGuest){
-            if (!user.getBannedUntil().isAfter(LocalDate.now())){
+            if (user.getBannedUntil().isAfter(LocalDateTime.now())){
                 user.setEnabled(true);
                 user.setBannedUntil(null);
             }else {
-                throw new DisabledException("You are banned");
+                throw new DisabledException("You are banned until " + user.getBannedUntil().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")));
             }
         }
 
@@ -293,5 +308,18 @@ public class AuthenticationService {
         user.setUsername(s.substring(0,19));
         userRepository.save(user);
         return "Your account has been removed";
+    }
+
+    public String updateConsent(UserDetails userDetails, Frequency frequency){
+
+        User user = (User) userDetails;
+        Consent consent = consentService.findByConsentId(new ConsentId(user));
+
+        consent.setSendNewsLetter(!frequency.equals(Frequency.NEVER));
+        consent.setFrequency(frequency);
+
+        consentService.save(consent);
+
+        return "Updated consents";
     }
 }

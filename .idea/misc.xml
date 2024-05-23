@@ -6,6 +6,10 @@
       <list>
         <option value="$PROJECT_DIR$/firstapp/pom.xml" />
         <option value="$PROJECT_DIR$/myblog/pom.xml" />
+        <option value="$PROJECT_DIR$/banner/pom.xml" />
+        <option value="$PROJECT_DIR$/Microservizi/ms-discovery/pom.xml" />
+        <option value="$PROJECT_DIR$/micro/ms-discovery/pom.xml" />
+        <option value="$PROJECT_DIR$/micro/ms-auth/pom.xml" />
       </list>
     </option>
   </component>

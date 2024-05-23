@@ -2,6 +2,7 @@ package it.cgmconsulting.myblog.controller;
 
 import it.cgmconsulting.myblog.entity.Reporting;
 import it.cgmconsulting.myblog.entity.enumeration.ReportingStatus;
+import it.cgmconsulting.myblog.payload.response.ReportingDetailResponse;
 import it.cgmconsulting.myblog.service.ReasonService;
 import it.cgmconsulting.myblog.service.ReportingService;
 import jakarta.validation.Valid;
@@ -12,10 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 
@@ -45,5 +43,25 @@ public class ReportingController {
             @RequestParam @Min(1) int commentId
             ){
         return new ResponseEntity<>(reportingService.updateReport(reason,startDate,status,commentId),HttpStatus.OK);
+    }
+
+    @GetMapping("/v1/reporting")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<?> getReport(
+            @RequestParam(defaultValue = "0") int pageNumber, //numero di pagina da partire
+            @RequestParam(defaultValue = "10") int pageSize, // numero di elementi per pagina
+            @RequestParam(defaultValue = "createdAt") String sortBy, // indica la colonna su cui eseguire l'ordinamento
+            @RequestParam(defaultValue = "ASC") String direction,
+            @RequestParam ReportingStatus status
+    ){
+        return new ResponseEntity<>(reportingService.getReports(pageNumber, pageSize, sortBy, direction, status), HttpStatus.OK);
+        //return ResponseEntity.ok(reportingService.getReports(pageNumber, pageSize, sortBy, direction, status));
+    }
+
+    @GetMapping("/v1/reporting/{commentId}")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<?> getReportDetail(@PathVariable @Min(1) int commentId
+    ){
+        return new ResponseEntity<>( reportingService.getReportingDetail(commentId), HttpStatus.OK);
     }
 }

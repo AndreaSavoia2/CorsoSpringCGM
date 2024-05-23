@@ -22,12 +22,12 @@ import java.util.stream.Collectors;
 public class ExceptionManagement {
 
     @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<String> ResourceNotFoundExceptionManagement(ResourceNotFoundException ex){
+    public ResponseEntity<String> resourceNotFoundExceptionManagement(ResourceNotFoundException ex){
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(CommentReportingException.class)
-    public ResponseEntity<String> ResourceNotFoundExceptionManagement(CommentReportingException ex){
+    public ResponseEntity<String> commentReportingExceptionManagement(CommentReportingException ex){
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
 

@@ -85,4 +85,6 @@ public interface PostRepository extends JpaRepository<Post,Integer> {
             "AND (p.title LIKE :keyword OR p.content LIKE :keyword)")
     Page<PostKeywordResponse> getVisiblePostsByKeyword(LocalDate now, Pageable pageable, String keyword, String path);
 
+    List<Post> findByPublicationDateAfter(LocalDate date);
+
 }

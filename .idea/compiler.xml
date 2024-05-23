@@ -9,12 +9,18 @@
         <outputRelativeToContentRoot value="true" />
         <module name="firstapp" />
         <module name="myblog" />
+        <module name="banner" />
+        <module name="ms-auth" />
+        <module name="ms-discovery" />
       </profile>
     </annotationProcessing>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="banner" options="-parameters" />
       <module name="firstapp" options="-parameters" />
+      <module name="ms-auth" options="-parameters" />
+      <module name="ms-discovery" options="-parameters" />
       <module name="myblog" options="-parameters" />
     </option>
   </component>

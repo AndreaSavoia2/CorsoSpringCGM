@@ -19,4 +19,8 @@ public class SignupRequest {
             regexp = "^[a-zA-Z0-9]{6,10}$",
             message = "La password deve contenere solo caratteri maiuscoli e/0 minuscoli e numeri tra 6 e 10 caratteri")
     private String password;
+
+    private boolean acceptRules;
+
+    private boolean sendNewsLetter;
 }

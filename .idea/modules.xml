@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/CorsoSpringBootCGMConsulting.iml" filepath="$PROJECT_DIR$/.idea/CorsoSpringBootCGMConsulting.iml" />
+      <module fileurl="file://$PROJECT_DIR$/myblog/myblog.iml" filepath="$PROJECT_DIR$/myblog/myblog.iml" />
     </modules>
   </component>
 </project>

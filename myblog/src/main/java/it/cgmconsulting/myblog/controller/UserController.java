@@ -1,5 +1,6 @@
 package it.cgmconsulting.myblog.controller;
 
+import it.cgmconsulting.myblog.entity.enumeration.Frequency;
 import it.cgmconsulting.myblog.payload.request.ChangeMeRequest;
 import it.cgmconsulting.myblog.payload.request.ChangePasswordRequest;
 import it.cgmconsulting.myblog.payload.request.SigninRequest;
@@ -95,5 +96,11 @@ public class UserController {
     @PutMapping("/v1/user/remove")
     public ResponseEntity<?> deleteMe(@AuthenticationPrincipal UserDetails userDetails){
         return new ResponseEntity<>(authenticationService.deleteMe(userDetails), HttpStatus.OK);
+    }
+
+    @PatchMapping("/v1/user/consent")
+    public ResponseEntity<?> updateConsent(@AuthenticationPrincipal UserDetails userDetails,
+                                           @RequestParam Frequency frequency){
+        return ResponseEntity.status(HttpStatus.OK).body(authenticationService.updateConsent(userDetails,frequency));
     }
 }

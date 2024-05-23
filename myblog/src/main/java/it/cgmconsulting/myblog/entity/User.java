@@ -12,6 +12,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -47,7 +48,7 @@ public class User extends CreationUpdate implements UserDetails {
     private String latname;
 
     //aggiungere campo di tempo del ban
-    private LocalDate bannedUntil = null;
+    private LocalDateTime bannedUntil;
 
     private String bio;
 

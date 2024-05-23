@@ -1,0 +1,71 @@
+# server.servlet.context-path
+server:
+  port: 8099
+  servlet:
+    context-path: /banner
+
+
+spring:
+
+  application:
+    name: banner
+
+  datasource:
+    url: jdbc:mysql://${MYSQL_HOSTNAME}:${MYSQL_PORT}/${MYSQL_DATABASE_NAME}?ssl-mode=REQUIRED
+    #url: jdbc:mariadb://${MYSQL_HOSTNAME}:${MYSQL_PORT}/${MYSQL_DATABASE_NAME}?ssl-mode=REQUIRED
+    username: ${MYSQL_USERNAME}
+    password: ${MYSQL_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    #driver-class-name: org.mariadb.jdbc.Driver
+
+  jpa:
+    hibernate:
+      # ddl-auto values:
+      # create-drop -> creazione del db all'all'avvio dell'applicazione e distruzione del db alla chiusura dell'appliocazione
+      # update -> aggiorna il db con le tabelle 'nuove', modifica quelle attuali, non elimina eventuali colonne che non esistono più
+      # validated -> confronta le entità con le tabelle e solleva eccezioni se ci sono incongruenze
+      # none: non viene fatto nulla (da usarte assolutamente in produzione)
+      ddl-auto: update
+    properties:
+      dialect: org.hibernate.dialect.MySQLDialect
+      #dialect: org.hibernate.dialect.MariaDBDialect
+      hibernate:
+        format_sql: true
+        use_sql_comments: true
+        highlight_sql: true
+    show-sql: true
+    open-in-view: false
+
+spring-doc:
+  swagger-ui:
+    enabled: true
+    # hostname:port/swagger-ui.html => localhost:8080/api/swagger-ui.html
+    path: /swagger-ui.html
+
+logging:
+  file:
+    name: /Users/Public/myblog/log/banner.txt
+  logback:
+    rolling-policy:
+      max-file-size: 1024KB
+      max-history: 7
+      file-name-pattern: /Users/Public/myblog/log/%d{yyyy-MM, aux}/banner.%d{yyyy-MM-dd}.%i.txt
+  pattern:
+    #console: "%d %-5level [%thread] %logger : %msg%n"
+    file: "%d %-5level [%thread] %logger : %msg%n"
+  level:
+    it.cgmconsulting.banner: info
+    org.hibernate.orm.jdbc.bind: trace
+    org.springframework: info
+
+# CUSTOM PROPERTIES
+
+application:
+  token: ${BANNER_TOKEN}
+  image:
+    banner:
+      size: 51200
+      height: 200
+      width: 200
+      extensions: jpg,jpeg,png
+      path: C:/Users/Public/banner/images/

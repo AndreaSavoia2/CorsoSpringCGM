@@ -30,7 +30,7 @@ public class MailService {
             mimeMessageHelper.setFrom(from);
             mimeMessageHelper.setTo(mail.getMailTo());
             mimeMessageHelper.setSubject(mail.getMailSubject());
-            mimeMessageHelper.setText(mail.getMailContent());
+            mimeMessageHelper.setText(mail.getMailContent(), true);
 
             javaMailSender.send(mimeMessage);
             log.info(mail.toString());
