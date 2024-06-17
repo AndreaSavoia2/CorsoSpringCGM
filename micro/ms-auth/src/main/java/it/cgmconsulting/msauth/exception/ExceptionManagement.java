@@ -44,7 +44,7 @@ public class ExceptionManagement {
 
     @ExceptionHandler(GenericException.class)
     public ResponseEntity<String> genericExceptionManagement(GenericException ex){
-        return new ResponseEntity<>(ex.getMessage(), HttpStatus.FORBIDDEN);
+        return new ResponseEntity<>(ex.getMessage(), ex.getHttpStatus());
     }
 
     @ExceptionHandler({MethodArgumentNotValidException.class})

@@ -4,7 +4,12 @@
     <file url="file://$PROJECT_DIR$/banner/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/firstapp/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/micro/ms-auth/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/micro/ms-comment/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/micro/ms-discovery/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/micro/ms-gateway/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/micro/ms-post/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/micro/ms-rating/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/micro/ms-tag/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/myblog/src/main/java" charset="UTF-8" />
   </component>
 </project>

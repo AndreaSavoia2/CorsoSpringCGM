@@ -1,0 +1,71 @@
+server:
+  port: 9090
+
+spring:
+  application:
+    name: gateway
+  cloud:
+    gateway:
+      routes:
+        - id: ms-auth
+          # lb = load balancer
+          uri: lb://ms-auth
+          predicates:
+            - Path=/ms-auth/**
+        - id: ms-post
+          # lb = load balancer
+          uri: lb://ms-post
+          predicates:
+            - Path=/ms-post/**
+        - id: ms-comment
+          # lb = load balancer
+          uri: lb://ms-comment
+          predicates:
+            - Path=/ms-comment/**
+        - id: ms-tag
+          # lb = load balancer
+          uri: lb://ms-tag
+          predicates:
+            - Path=/ms-tag/**
+        - id: ms-rating
+          # lb = load balancer
+          uri: lb://ms-rating
+          predicates:
+            - Path=/ms-rating/**
+
+eureka:
+  instance:
+    prefer-ip-address: true
+    leaseRenewalIntervalInSeconds: 20
+  client:
+    register-with-eureka: true
+    service-url:
+      default-zone: localhost:8761/eureka
+
+logging:
+  level:
+    it.cgmconsulting.gateway: info
+    org.hibernate.orm.jdbc.bind: trace
+    org.springframework: info
+
+##http://localhost:9411/zipkin/
+management:
+  endpoint:
+    health:
+      show-details: always
+  endpoints:
+    web:
+      exposure:
+        include: health
+  otlp:
+    tracing:
+      endpoint: http://localhost:9411/api/v2/spans
+  tracing:
+    sampling:
+      probability: 1.0
+
+# CUSTOM PROPERTIES
+application:
+  security:
+    token: ${TOKEN}
+    internalToken: ${INTERNAL_TOKEN}

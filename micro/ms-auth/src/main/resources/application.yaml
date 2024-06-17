@@ -1,6 +1,6 @@
 # server.servlet.context-path
 server:
-  port: 8060
+  port: 0
   servlet:
     #http://hostname:port//context-path/requestmapping/uri
     context-path: /ms-auth
@@ -49,13 +49,16 @@ logging:
 eureka:
   instance:
     prefer-ip-address: true
-    leaseRenewalIntervalInSeconds: 5
+    leaseRenewalIntervalInSeconds: 20
   client:
     register-with-eureka: true
     service-url:
       default-zone: localhost:8761/eureka
 
 management:
+  endpoint:
+    health:
+      show-details: always
   endpoints:
     web:
       exposure:
@@ -63,9 +66,16 @@ management:
   info:
     java.enabled: true
     os.enabled: true
+  otlp:
+    tracing:
+      endpoint: http://localhost:9411/api/v2/spans
+  tracing:
+    sampling:
+      probability: 1.0
 
 # CUSTOM PROPERTIES
 
 application:
   security:
     token: ${TOKEN}
+    internalToken: ${INTERNAL_TOKEN}

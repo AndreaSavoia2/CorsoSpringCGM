@@ -10,6 +10,11 @@
         <option value="$PROJECT_DIR$/Microservizi/ms-discovery/pom.xml" />
         <option value="$PROJECT_DIR$/micro/ms-discovery/pom.xml" />
         <option value="$PROJECT_DIR$/micro/ms-auth/pom.xml" />
+        <option value="$PROJECT_DIR$/micro/ms-gateway/pom.xml" />
+        <option value="$PROJECT_DIR$/micro/ms-post/pom.xml" />
+        <option value="$PROJECT_DIR$/micro/ms-comment/pom.xml" />
+        <option value="$PROJECT_DIR$/micro/ms-tag/pom.xml" />
+        <option value="$PROJECT_DIR$/micro/ms-rating/pom.xml" />
       </list>
     </option>
   </component>
